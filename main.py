@@ -387,8 +387,9 @@ def main(args):
     logging.info('batch_size = %d' % args.batch_size)
     logging.info('hidden_dim = %d' % args.hidden_dim)
     logging.info('gamma = %f' % args.gamma)
-    
+     
     if args.do_train:
+        print("DEBUG: About to start training")
         training_logs = []
         # #Training Loop
         for step in range(init_step, args.max_steps):
@@ -446,7 +447,7 @@ def main(args):
             'warm_up_steps': warm_up_steps
         }
         save_model(model, optimizer, save_variable_list, args)
-        
+        print("DEBUG: stopped training")
     try:
         print (step)
     except:
