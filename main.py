@@ -195,7 +195,7 @@ def load_data(args, tasks):
 
 def main(args):
     set_global_seed(args.seed)
-    print("set global seed")
+    print("DEBUG: set global seed")
     tasks = args.tasks.split('.')
     for task in tasks:
         if 'n' in task and args.geo in ['box', 'vec']:
@@ -204,7 +204,7 @@ def main(args):
         assert args.geo == 'beta', "only BetaE supports modeling union using De Morgan's Laws"
 
     cur_time = parse_time()
-    print("parsed the time")
+    print("DEBUG: parsed the time")
     if args.prefix is None:
         prefix = 'logs'
     else:
@@ -233,13 +233,13 @@ def main(args):
     else:
         writer = SummaryWriter(args.save_path)
     set_logger(args)
-    print("configured summary writter")
+    print("DEBUG: configured summary writter")
     with open('%s/stats.txt'%args.data_path) as f:
         entrel = f.readlines()
         nentity = int(entrel[0].split(' ')[-1])
         nrelation = int(entrel[1].split(' ')[-1])
     
-    print("read entity")
+    print("DEBUG: read entity")
     args.nentity = nentity
     args.nrelation = nrelation
     
@@ -250,16 +250,17 @@ def main(args):
     logging.info('#relation: %d' % nrelation)
     logging.info('#max steps: %d' % args.max_steps)
     logging.info('Evaluate unoins using: %s' % args.evaluate_union)
-    print("logged basic info")
+    print("DEBUG: logged basic info")
 
     train_queries, train_answers, valid_queries, valid_hard_answers, valid_easy_answers, test_queries, test_hard_answers, test_easy_answers = load_data(args, tasks)        
     
-    print("dataloading done")
+    print("DEBUG: dataloading done")
 
     logging.info("Training info:")
     if args.do_train:
-        print("entered training")
+        print("DEBUG: entered training")
         for query_structure in train_queries:
+            print("DEBUG: ",)
             print(query_name_dict[query_structure]+": "+str(len(train_queries[query_structure])))
             logging.info(query_name_dict[query_structure]+": "+str(len(train_queries[query_structure])))
         train_path_queries = defaultdict(set)
@@ -271,6 +272,7 @@ def main(args):
             else:
                 train_other_queries[query_structure] = train_queries[query_structure]
         train_path_queries = flatten_query(train_path_queries)
+        print("DEBUG: flattened train queries")
         train_path_iterator = SingledirectionalOneShotIterator(DataLoader(
                                     TrainDataset(train_path_queries, nentity, nrelation, args.negative_sample_size, train_answers),
                                     batch_size=args.batch_size,
@@ -278,6 +280,7 @@ def main(args):
                                     num_workers=args.cpu_num,
                                     collate_fn=TrainDataset.collate_fn
                                 ))
+        print("DEBUG: created train path iterator")
         if len(train_other_queries) > 0:
             train_other_queries = flatten_query(train_other_queries)
             train_other_iterator = SingledirectionalOneShotIterator(DataLoader(
@@ -323,6 +326,7 @@ def main(args):
             collate_fn=TestDataset.collate_fn
         )
 
+        print("DEBUG: Created all iterators")
     model = KGReasoning(
         nentity=nentity,
         nrelation=nrelation,
@@ -336,6 +340,7 @@ def main(args):
         query_name_dict = query_name_dict
     )
 
+    print("DEBUG: Created model")
     logging.info('Model Parameter Configuration:')
     num_params = 0
     for name, param in model.named_parameters():
