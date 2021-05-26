@@ -392,7 +392,9 @@ def main(args):
         print("DEBUG: About to start training")
         training_logs = []
         # #Training Loop
+        print(f"DEBUG: start:{init_step} , end:{args.max_steps}")
         for step in range(init_step, args.max_steps):
+            print(step)
             if step == 2*args.max_steps//3:
                 args.valid_steps *= 4
 
@@ -401,9 +403,9 @@ def main(args):
                 writer.add_scalar('path_'+metric, log[metric], step)
             if train_other_iterator is not None:
 
-                print("DEBUG: train step in")
+                # print("DEBUG: train step in")
                 log = model.train_step(model, optimizer, train_other_iterator, args, step)
-                print("DEBUG: train step out")
+                # print("DEBUG: train step out")
                 for metric in log:
                     writer.add_scalar('other_'+metric, log[metric], step)
                 log = model.train_step(model, optimizer, train_path_iterator, args, step)
