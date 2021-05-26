@@ -195,6 +195,7 @@ def load_data(args, tasks):
 
 def main(args):
     set_global_seed(args.seed)
+    print("set global seed")
     tasks = args.tasks.split('.')
     for task in tasks:
         if 'n' in task and args.geo in ['box', 'vec']:
@@ -203,6 +204,7 @@ def main(args):
         assert args.geo == 'beta', "only BetaE supports modeling union using De Morgan's Laws"
 
     cur_time = parse_time()
+    print("parsed the time")
     if args.prefix is None:
         prefix = 'logs'
     else:
@@ -231,12 +233,13 @@ def main(args):
     else:
         writer = SummaryWriter(args.save_path)
     set_logger(args)
-
+    print("configured summary writter")
     with open('%s/stats.txt'%args.data_path) as f:
         entrel = f.readlines()
         nentity = int(entrel[0].split(' ')[-1])
         nrelation = int(entrel[1].split(' ')[-1])
     
+    print("read entity")
     args.nentity = nentity
     args.nrelation = nrelation
     
