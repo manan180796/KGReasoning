@@ -250,6 +250,7 @@ def main(args):
     logging.info('#relation: %d' % nrelation)
     logging.info('#max steps: %d' % args.max_steps)
     logging.info('Evaluate unoins using: %s' % args.evaluate_union)
+    print("logged basic info")
 
     train_queries, train_answers, valid_queries, valid_hard_answers, valid_easy_answers, test_queries, test_hard_answers, test_easy_answers = load_data(args, tasks)        
 
