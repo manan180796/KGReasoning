@@ -15,7 +15,7 @@ import torch
 from torch.utils.data import DataLoader
 from models import KGReasoning
 from dataloader import TestDataset, TrainDataset, SingledirectionalOneShotIterator
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 import time
 import pickle
 from collections import defaultdict
