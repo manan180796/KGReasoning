@@ -400,7 +400,10 @@ def main(args):
             for metric in log:
                 writer.add_scalar('path_'+metric, log[metric], step)
             if train_other_iterator is not None:
+
+                print("DEBUG: train step in")
                 log = model.train_step(model, optimizer, train_other_iterator, args, step)
+                print("DEBUG: train step out")
                 for metric in log:
                     writer.add_scalar('other_'+metric, log[metric], step)
                 log = model.train_step(model, optimizer, train_path_iterator, args, step)
