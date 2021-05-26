@@ -253,10 +253,14 @@ def main(args):
     print("logged basic info")
 
     train_queries, train_answers, valid_queries, valid_hard_answers, valid_easy_answers, test_queries, test_hard_answers, test_easy_answers = load_data(args, tasks)        
+    
+    print("dataloading done")
 
     logging.info("Training info:")
     if args.do_train:
+        print("entered training")
         for query_structure in train_queries:
+            print(query_name_dict[query_structure]+": "+str(len(train_queries[query_structure])))
             logging.info(query_name_dict[query_structure]+": "+str(len(train_queries[query_structure])))
         train_path_queries = defaultdict(set)
         train_other_queries = defaultdict(set)
