@@ -394,7 +394,7 @@ def main(args):
         # #Training Loop
         print(f"DEBUG: start:{init_step} , end:{args.max_steps}")
         for step in range(init_step, args.max_steps):
-            print(step)
+            print(f"DEBUG: step = {step}")
             if step == 2*args.max_steps//3:
                 args.valid_steps *= 4
 
@@ -403,16 +403,18 @@ def main(args):
                 writer.add_scalar('path_'+metric, log[metric], step)
             if train_other_iterator is not None:
 
-                # print("DEBUG: train step in")
+                print("DEBUG: train step in",flush=True)
                 log = model.train_step(model, optimizer, train_other_iterator, args, step)
-                # print("DEBUG: train step out")
+                print("DEBUG: train step out",flush=True)
                 for metric in log:
                     writer.add_scalar('other_'+metric, log[metric], step)
-                log = model.train_step(model, optimizer, train_path_iterator, args, step)
+                print("DEBUG: written the logs",flush=True)
+                # log = model.train_step(model, optimizer, train_path_iterator, args, step)
 
             training_logs.append(log)
 
             if step >= warm_up_steps:
+                print(f"DEBUG: completed first phase warmup")
                 current_learning_rate = current_learning_rate / 5
                 logging.info('Change learning_rate to %f at step %d' % (current_learning_rate, step))
                 optimizer = torch.optim.Adam(
