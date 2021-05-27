@@ -398,7 +398,7 @@ def main(args):
             if step == 2*args.max_steps//3:
                 args.valid_steps *= 4
 
-            log = model.train_step(model, optimizer, train_path_iterator, args, step)
+            # log = model.train_step(model, optimizer, train_path_iterator, args, step)
             for metric in log:
                 writer.add_scalar('path_'+metric, log[metric], step)
             if train_other_iterator is not None and False:
