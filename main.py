@@ -406,8 +406,7 @@ def main(args):
                 for metric in log:
                     writer.add_scalar('other_'+metric, log[metric], step)
                 print("DEBUG: written the logs")
-
-            training_logs.append(log)
+                training_logs.append(log)
 
             if step >= warm_up_steps:
                 print(f"DEBUG: completed first phase warmup")
