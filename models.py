@@ -584,14 +584,14 @@ class KGReasoning(nn.Module):
             negative_sample = negative_sample.cuda()
             subsampling_weight = subsampling_weight.cuda()
 
-        positive_logit, negative_logit, subsampling_weight, _ = model(positive_sample, negative_sample, subsampling_weight, batch_queries_dict, batch_idxs_dict)
+        # positive_logit, negative_logit, subsampling_weight, _ = model(positive_sample, negative_sample, subsampling_weight, batch_queries_dict, batch_idxs_dict)
 
-        negative_score = F.logsigmoid(-negative_logit).mean(dim=1)
-        positive_score = F.logsigmoid(positive_logit).squeeze(dim=1)
-        positive_sample_loss = - (subsampling_weight * positive_score).sum()
-        negative_sample_loss = - (subsampling_weight * negative_score).sum()
-        positive_sample_loss /= subsampling_weight.sum()
-        negative_sample_loss /= subsampling_weight.sum()
+        # negative_score = F.logsigmoid(-negative_logit).mean(dim=1)
+        # positive_score = F.logsigmoid(positive_logit).squeeze(dim=1)
+        # positive_sample_loss = - (subsampling_weight * positive_score).sum()
+        # negative_sample_loss = - (subsampling_weight * negative_score).sum()
+        # positive_sample_loss /= subsampling_weight.sum()
+        # negative_sample_loss /= subsampling_weight.sum()
 
         # loss = (positive_sample_loss + negative_sample_loss)/2
         # loss.backward()
