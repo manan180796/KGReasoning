@@ -292,6 +292,7 @@ def main(args):
                                     ))
         else:
             train_other_iterator = None
+        train_other_iterator = None
     
     logging.info("Validation info:")
     if args.do_valid:
