@@ -568,7 +568,7 @@ class KGReasoning(nn.Module):
         model.train()
         optimizer.zero_grad()
 
-        # positive_sample, negative_sample, subsampling_weight, batch_queries, query_structures = next(train_iterator)
+        positive_sample, negative_sample, subsampling_weight, batch_queries, query_structures = next(train_iterator)
         # batch_queries_dict = collections.defaultdict(list)
         # batch_idxs_dict = collections.defaultdict(list)
         # for i, query in enumerate(batch_queries): # group queries with same structure
