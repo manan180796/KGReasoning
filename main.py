@@ -401,7 +401,7 @@ def main(args):
             log = model.train_step(model, optimizer, train_path_iterator, args, step)
             for metric in log:
                 writer.add_scalar('path_'+metric, log[metric], step)
-            if train_other_iterator is not None and False:
+            if train_other_iterator is not None:
 
                 print("DEBUG: train other step in")
                 log = model.train_step(model, optimizer, train_other_iterator, args, step)
