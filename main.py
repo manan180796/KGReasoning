@@ -272,6 +272,7 @@ def main(args):
             else:
                 train_other_queries[query_structure] = train_queries[query_structure]
         train_path_queries = flatten_query(train_path_queries)
+        print(f"DEBUG: {train_path_queries}")
         print("DEBUG: flattened train queries")
         train_path_iterator = SingledirectionalOneShotIterator(DataLoader(
                                     TrainDataset(train_path_queries, nentity, nrelation, args.negative_sample_size, train_answers),
@@ -280,6 +281,7 @@ def main(args):
                                     num_workers=args.cpu_num,
                                     collate_fn=TrainDataset.collate_fn
                                 ))
+        
         print("DEBUG: created train path iterator")
         if len(train_other_queries) > 0:
             train_other_queries = flatten_query(train_other_queries)
@@ -292,8 +294,7 @@ def main(args):
                                     ))
         else:
             train_other_iterator = None
-        train_other_iterator = None
-    
+    exit()
     logging.info("Validation info:")
     if args.do_valid:
         for query_structure in valid_queries:
