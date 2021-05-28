@@ -571,14 +571,14 @@ class KGReasoning(nn.Module):
         positive_sample, negative_sample, subsampling_weight, batch_queries, query_structures = next(train_iterator)
         batch_queries_dict = collections.defaultdict(list)
         batch_idxs_dict = collections.defaultdict(list)
-        # for i, query in enumerate(batch_queries): # group queries with same structure
-            # batch_queries_dict[query_structures[i]].append(query)
-            # batch_idxs_dict[query_structures[i]].append(i)
-        # for query_structure in batch_queries_dict:
-            # if args.cuda:
-                # batch_queries_dict[query_structure] = torch.LongTensor(batch_queries_dict[query_structure]).cuda()
-            # else:
-                # batch_queries_dict[query_structure] = torch.LongTensor(batch_queries_dict[query_structure])
+        for i, query in enumerate(batch_queries): # group queries with same structure
+            batch_queries_dict[query_structures[i]].append(query)
+            batch_idxs_dict[query_structures[i]].append(i)
+        for query_structure in batch_queries_dict:
+            if args.cuda:
+                batch_queries_dict[query_structure] = torch.LongTensor(batch_queries_dict[query_structure]).cuda()
+            else:
+                batch_queries_dict[query_structure] = torch.LongTensor(batch_queries_dict[query_structure])
         if args.cuda:
             positive_sample = positive_sample.cuda()
             negative_sample = negative_sample.cuda()
