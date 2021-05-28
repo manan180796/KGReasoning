@@ -605,6 +605,47 @@ class KGReasoning(nn.Module):
         return log
 
     @staticmethod
+    def validate_step(model, optimizer, validate_iterator, args, step):
+        model.train()
+        optimizer.zero_grad()
+
+        positive_sample, negative_sample, subsampling_weight, batch_queries, query_structures = next(validate_iterator)
+        batch_queries_dict = collections.defaultdict(list)
+        batch_idxs_dict = collections.defaultdict(list)
+        for i, query in enumerate(batch_queries): # group queries with same structure
+            batch_queries_dict[query_structures[i]].append(query)
+            batch_idxs_dict[query_structures[i]].append(i)
+        for query_structure in batch_queries_dict:
+            if args.cuda:
+                batch_queries_dict[query_structure] = torch.LongTensor(batch_queries_dict[query_structure]).cuda()
+            else:
+                batch_queries_dict[query_structure] = torch.LongTensor(batch_queries_dict[query_structure])
+        if args.cuda:
+            positive_sample = positive_sample.cuda()
+            negative_sample = negative_sample.cuda()
+            subsampling_weight = subsampling_weight.cuda()
+
+        positive_logit, negative_logit, subsampling_weight, _ = model(positive_sample, negative_sample, subsampling_weight, batch_queries_dict, batch_idxs_dict)
+
+        negative_score = F.logsigmoid(-negative_logit).mean(dim=1)
+        positive_score = F.logsigmoid(positive_logit).squeeze(dim=1)
+        positive_sample_loss = - (subsampling_weight * positive_score).sum()
+        negative_sample_loss = - (subsampling_weight * negative_score).sum()
+        positive_sample_loss /= subsampling_weight.sum()
+        negative_sample_loss /= subsampling_weight.sum()
+
+        loss = (positive_sample_loss + negative_sample_loss)/2
+        loss.backward()
+        optimizer.step()
+        log = {
+            'positive_sample_loss': positive_sample_loss.item(),
+            'negative_sample_loss': negative_sample_loss.item(),
+            'loss': loss.item(),
+        }
+        # return {}
+        return log
+
+    @staticmethod
     def test_step(model, easy_answers, hard_answers, args, test_dataloader, query_name_dict, save_result=False, save_str="", save_empty=False):
         model.eval()
 
