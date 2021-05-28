@@ -283,7 +283,7 @@ def main(args):
                                     ))
         else:
             train_other_iterator = None
-    exit()
+    # exit()
     logging.info("Validation info:")
     if args.do_valid:
         for query_structure in valid_queries:
