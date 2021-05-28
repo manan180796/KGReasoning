@@ -195,7 +195,6 @@ def load_data(args, tasks):
 
 def main(args):
     set_global_seed(args.seed)
-    print("DEBUG: set global seed")
     tasks = args.tasks.split('.')
     for task in tasks:
         if 'n' in task and args.geo in ['box', 'vec']:
@@ -204,7 +203,6 @@ def main(args):
         assert args.geo == 'beta', "only BetaE supports modeling union using De Morgan's Laws"
 
     cur_time = parse_time()
-    print("DEBUG: parsed the time")
     if args.prefix is None:
         prefix = 'logs'
     else:
@@ -233,13 +231,11 @@ def main(args):
     else:
         writer = SummaryWriter(args.save_path)
     set_logger(args)
-    print("DEBUG: configured summary writter")
     with open('%s/stats.txt'%args.data_path) as f:
         entrel = f.readlines()
         nentity = int(entrel[0].split(' ')[-1])
         nrelation = int(entrel[1].split(' ')[-1])
     
-    print("DEBUG: read entity")
     args.nentity = nentity
     args.nrelation = nrelation
     
@@ -250,18 +246,13 @@ def main(args):
     logging.info('#relation: %d' % nrelation)
     logging.info('#max steps: %d' % args.max_steps)
     logging.info('Evaluate unoins using: %s' % args.evaluate_union)
-    print("DEBUG: logged basic info")
 
     train_queries, train_answers, valid_queries, valid_hard_answers, valid_easy_answers, test_queries, test_hard_answers, test_easy_answers = load_data(args, tasks)        
     
-    print("DEBUG: dataloading done")
 
     logging.info("Training info:")
     if args.do_train:
-        print("DEBUG: entered training")
         for query_structure in train_queries:
-            print("DEBUG: ",)
-            print(query_name_dict[query_structure]+": "+str(len(train_queries[query_structure])))
             logging.info(query_name_dict[query_structure]+": "+str(len(train_queries[query_structure])))
         train_path_queries = defaultdict(set)
         train_other_queries = defaultdict(set)
@@ -272,8 +263,6 @@ def main(args):
             else:
                 train_other_queries[query_structure] = train_queries[query_structure]
         train_path_queries = flatten_query(train_path_queries)
-        print(f"DEBUG: {train_path_queries}")
-        print("DEBUG: flattened train queries")
         train_path_iterator = SingledirectionalOneShotIterator(DataLoader(
                                     TrainDataset(train_path_queries, nentity, nrelation, args.negative_sample_size, train_answers),
                                     batch_size=args.batch_size,
@@ -328,7 +317,6 @@ def main(args):
             collate_fn=TestDataset.collate_fn
         )
 
-        print("DEBUG: Created all iterators")
     model = KGReasoning(
         nentity=nentity,
         nrelation=nrelation,
@@ -342,7 +330,6 @@ def main(args):
         query_name_dict = query_name_dict
     )
 
-    print("DEBUG: Created model")
     logging.info('Model Parameter Configuration:')
     num_params = 0
     for name, param in model.named_parameters():
@@ -391,7 +378,6 @@ def main(args):
     logging.info('gamma = %f' % args.gamma)
      
     if args.do_train:
-        print("DEBUG: About to start training")
         training_logs = []
         # #Training Loop
         print(f"DEBUG: start:{init_step} , end:{args.max_steps}")
@@ -405,18 +391,14 @@ def main(args):
                 writer.add_scalar('path_'+metric, log[metric], step)
             if train_other_iterator is not None:
 
-                print("DEBUG: train other step in")
                 log = model.train_step(model, optimizer, train_other_iterator, args, step)
-                print("DEBUG: train other step out")
                 for metric in log:
                     writer.add_scalar('other_'+metric, log[metric], step)
-                print("DEBUG: written the logs")
                 log = model.train_step(model, optimizer, train_path_iterator, args, step)
 
             training_logs.append(log)
 
             if step >= warm_up_steps:
-                print(f"DEBUG: completed first phase warmup")
                 current_learning_rate = current_learning_rate / 5
                 logging.info('Change learning_rate to %f at step %d' % (current_learning_rate, step))
                 optimizer = torch.optim.Adam(
@@ -456,7 +438,6 @@ def main(args):
             'warm_up_steps': warm_up_steps
         }
         save_model(model, optimizer, save_variable_list, args)
-        print("DEBUG: stopped training")
     try:
         print (step)
     except:
